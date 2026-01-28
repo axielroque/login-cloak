@@ -45,6 +45,7 @@ function slp_intercept_direct_login() {
     // Permitir solo acciones GET legítimas
     $action = isset( $_REQUEST['action'] ) ? sanitize_key( $_REQUEST['action'] ) : '';
     $allowed_actions = [ 'lostpassword', 'rp', 'resetpass', 'register', 'logout', 'postpass', 'verifyemail', 'confirm_admin_email', 'reauth' ];
+    $allowed_actions = (array) apply_filters( 'slp_allowed_login_actions', $allowed_actions, $action );
     if ( in_array( $action, $allowed_actions, true ) ) {
         return;
     }
@@ -87,7 +88,9 @@ function slp_maybe_render_login() {
         $interim_login = false;
         $action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login';
         $user_login = '';
-        
+        nocache_headers();
+        header( 'X-Robots-Tag: noindex, nofollow', true );
+
         require_once ABSPATH . 'wp-login.php';
         exit;
     }
