@@ -14,6 +14,15 @@ function slp_add_settings_page() {
     );
 }
 
+function slp_sanitize_block_behavior( $value ) {
+    $value = (string) $value;
+    $allowed = [ 'redirect', '404', '403' ];
+    if ( ! in_array( $value, $allowed, true ) ) {
+        $value = 'redirect';
+    }
+    return $value;
+}
+
 function slp_register_settings() {
     register_setting(
         'slp_settings',
@@ -21,6 +30,16 @@ function slp_register_settings() {
         [
             'type'              => 'string',
             'sanitize_callback' => 'slp_sanitize_login_slug',
+        ]
+    );
+
+    register_setting(
+        'slp_settings',
+        'slp_block_behavior',
+        [
+            'type'              => 'string',
+            'sanitize_callback' => 'slp_sanitize_block_behavior',
+            'default'           => 'redirect',
         ]
     );
 }
@@ -60,6 +79,7 @@ function slp_render_settings_page() {
     }
 
     $slug = slp_get_login_slug();
+    $behavior = get_option( 'slp_block_behavior', 'redirect' );
     ?>
     <div class="wrap">
         <h1><?php echo esc_html__( 'Secure Login Path', 'secure-login-path' ); ?></h1>
@@ -76,6 +96,15 @@ function slp_render_settings_page() {
             settings_fields( 'slp_settings' );
             ?>
             <input type="text" name="slp_login_slug" value="<?php echo esc_attr( $slug ); ?>" />
+
+            <p>
+                <strong><?php echo esc_html__( 'Block behavior:', 'secure-login-path' ); ?></strong><br>
+                <select name="slp_block_behavior">
+                    <option value="redirect" <?php selected( $behavior, 'redirect' ); ?>><?php echo esc_html__( 'Redirect to home (302)', 'secure-login-path' ); ?></option>
+                    <option value="404" <?php selected( $behavior, '404' ); ?>><?php echo esc_html__( '404 Not Found', 'secure-login-path' ); ?></option>
+                    <option value="403" <?php selected( $behavior, '403' ); ?>><?php echo esc_html__( '403 Forbidden', 'secure-login-path' ); ?></option>
+                </select>
+            </p>
             <?php submit_button(); ?>
         </form>
 

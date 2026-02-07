@@ -66,9 +66,8 @@ function slp_intercept_direct_login() {
     $slug = slp_get_login_slug();
     if ( empty( $slug ) ) return;
     
-    // Bloquear y redirigir
-    wp_safe_redirect( home_url( '/' ), 302 );
-    exit;
+    // Bloquear según configuración
+    slp_send_block_response();
 }
 
 // Marcar contexto del slug personalizado temprano
