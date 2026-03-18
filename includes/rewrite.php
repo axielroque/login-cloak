@@ -43,7 +43,7 @@ function slp_intercept_direct_login() {
     }
 
     // Allow only legitimate GET actions
-    $action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+    $action = sanitize_key( (string) filter_input( INPUT_GET, 'action', FILTER_UNSAFE_RAW ) );
     $allowed_actions = [ 'lostpassword', 'rp', 'resetpass', 'register', 'logout', 'postpass', 'verifyemail', 'confirm_admin_email', 'reauth' ];
     $allowed_actions = (array) apply_filters( 'slp_allowed_login_actions', $allowed_actions, $action );
     if ( in_array( $action, $allowed_actions, true ) ) {
@@ -85,7 +85,10 @@ function slp_maybe_render_login() {
         global $error, $interim_login, $action, $user_login;
         $error = '';
         $interim_login = false;
-        $action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : 'login';
+        $action = sanitize_key( (string) filter_input( INPUT_GET, 'action', FILTER_UNSAFE_RAW ) );
+        if ( $action === '' ) {
+            $action = 'login';
+        }
         $user_login = '';
         nocache_headers();
         if ( ! headers_sent() ) {
