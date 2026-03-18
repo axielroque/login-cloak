@@ -10,7 +10,8 @@ function slp_generate_random_slug() {
 }
 
 function slp_is_recovery_mode() {
-    return isset( $_GET['slp-recover'] ) && $_GET['slp-recover'] === '1';
+    $recover = filter_input( INPUT_GET, 'slp-recover', FILTER_SANITIZE_NUMBER_INT );
+    return $recover === '1';
 }
 
 function slp_send_block_response() {

@@ -9,12 +9,12 @@ add_action( 'init', 'slp_intercept_wp_admin', 1 );
 function slp_intercept_wp_admin() {
     if ( slp_is_recovery_mode() ) return;
 
-    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
+    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
     if ( ! $request_uri || strpos( $request_uri, '/wp-admin' ) === false ) {
         return;
     }
 
-    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( $_SERVER['SCRIPT_NAME'] ) : '';
+    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) : '';
     $allowed_scripts = apply_filters( 'slp_allowed_admin_scripts', [ 'admin-ajax.php', 'admin-post.php' ] );
     $is_allowed_script = in_array( $script_name, $allowed_scripts, true );
     $is_cron = function_exists( 'wp_doing_cron' ) && wp_doing_cron();
@@ -31,7 +31,7 @@ add_action( 'admin_init', 'slp_block_wp_admin' );
 function slp_block_wp_admin() {
     if ( slp_is_recovery_mode() ) return;
 
-    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( $_SERVER['SCRIPT_NAME'] ) : '';
+    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) : '';
     $allowed_scripts = apply_filters( 'slp_allowed_admin_scripts', [ 'admin-ajax.php', 'admin-post.php' ] );
     $is_allowed_script = in_array( $script_name, $allowed_scripts, true );
     $is_cron = function_exists( 'wp_doing_cron' ) && wp_doing_cron();
