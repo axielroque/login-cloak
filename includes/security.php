@@ -43,9 +43,8 @@ function slp_intercept_wp_admin() {
     $is_cron = function_exists( 'wp_doing_cron' ) && wp_doing_cron();
 
     if ( ! is_user_logged_in() && ! wp_doing_ajax() && ! $is_allowed_script && ! $is_cron ) {
-        wp_safe_redirect( home_url( '/' ), 302 );
-        exit;
-    }
+        slp_send_block_response();
+}
 }
 
 /**
@@ -61,9 +60,8 @@ function slp_block_wp_admin() {
     $is_cron = function_exists( 'wp_doing_cron' ) && wp_doing_cron();
 
     if ( ! is_user_logged_in() && ! wp_doing_ajax() && ! $is_allowed_script && ! $is_cron ) {
-        wp_safe_redirect( home_url( '/' ), 302 );
-        exit;
-    }
+        slp_send_block_response();
+}
 }
 
 /**

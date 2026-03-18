@@ -45,6 +45,7 @@ Hide and protect the default WordPress login and admin URLs by defining a secret
 - The slug is validated against forbidden words and a minimum length.
 - Changing the slug triggers an automatic flush of rewrite rules.
 - Copy buttons provide quick copy of the secret login and recovery URLs.
+- Block behavior is configurable: redirect to home (302), 404 Not Found, or 403 Forbidden.
 
 ## Filters
 
