@@ -28,8 +28,8 @@ function slp_add_query_vars( $vars ) {
 add_action( 'init', 'slp_intercept_direct_login', 1 );
 function slp_intercept_direct_login() {
     // Only act if the request is targeting wp-login.php directly
-    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( $_SERVER['SCRIPT_NAME'] ) : '';
-    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
+    $script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) : '';
+    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
     $is_login_script = ( $script_name === 'wp-login.php' );
     $is_login_uri = ( $request_uri && strpos( $request_uri, 'wp-login.php' ) !== false );
     if ( ! $is_login_script && ! $is_login_uri ) {
@@ -37,13 +37,13 @@ function slp_intercept_direct_login() {
     }
 
     // Allow POST requests so authentication can work
-    $method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( $_SERVER['REQUEST_METHOD'] ) : 'GET';
+    $method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
     if ( $method === 'POST' ) {
         return;
     }
 
     // Allow only legitimate GET actions
-    $action = isset( $_REQUEST['action'] ) ? sanitize_key( $_REQUEST['action'] ) : '';
+    $action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
     $allowed_actions = [ 'lostpassword', 'rp', 'resetpass', 'register', 'logout', 'postpass', 'verifyemail', 'confirm_admin_email', 'reauth' ];
     $allowed_actions = (array) apply_filters( 'slp_allowed_login_actions', $allowed_actions, $action );
     if ( in_array( $action, $allowed_actions, true ) ) {
@@ -52,7 +52,7 @@ function slp_intercept_direct_login() {
     // Allow if the referer comes from the custom login path
     $slug = slp_get_login_slug();
     if ( ! empty( $slug ) ) {
-        $referer = isset( $_SERVER['HTTP_REFERER'] ) ? (string) $_SERVER['HTTP_REFERER'] : '';
+        $referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
         if ( $referer && strpos( $referer, '/' . $slug . '/' ) !== false ) {
             return;
         }
@@ -85,7 +85,7 @@ function slp_maybe_render_login() {
         global $error, $interim_login, $action, $user_login;
         $error = '';
         $interim_login = false;
-        $action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login';
+        $action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : 'login';
         $user_login = '';
         nocache_headers();
         if ( ! headers_sent() ) {
