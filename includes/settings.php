@@ -91,7 +91,18 @@ function lcloak_render_settings_page() {
     if ( isset( $_POST['lcloak_generate'] ) ) {
         $nonce = isset( $_POST['lcloak_generate_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['lcloak_generate_nonce'] ) ) : '';
         if ( current_user_can( 'manage_options' ) && $nonce && wp_verify_nonce( $nonce, 'lcloak_generate_action' ) ) {
-            update_option( 'lcloak_login_slug', lcloak_generate_random_slug() );
+            $new_slug = lcloak_generate_random_slug();
+            update_option( 'lcloak_login_slug', $new_slug );
+            update_option( 'slp_login_slug', $new_slug );
+        }
+        // No flush needed here because update_option triggers our hook
+    } elseif ( isset( $_POST['slp_generate'] ) ) {
+        // Legacy submit support
+        $nonce = isset( $_POST['slp_generate_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['slp_generate_nonce'] ) ) : '';
+        if ( current_user_can( 'manage_options' ) && $nonce && wp_verify_nonce( $nonce, 'slp_generate_action' ) ) {
+            $new_slug = lcloak_generate_random_slug();
+            update_option( 'lcloak_login_slug', $new_slug );
+            update_option( 'slp_login_slug', $new_slug );
         }
         // No flush needed here because update_option triggers our hook
     }
