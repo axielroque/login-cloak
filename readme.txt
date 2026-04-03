@@ -43,7 +43,6 @@ If you get locked out or need to bypass the protection temporarily, append the r
 
 `https://example.com/wp-login.php?lcloak-recover=1`
 
-Note: For legacy compatibility, the `slp-recover=1` parameter is also supported.
 This disables the blocking logic only for that request so you can log in.
 
 == Compatibility ==
